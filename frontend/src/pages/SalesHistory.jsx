@@ -28,27 +28,24 @@ const SalesHistory = () => {
         const salesResult = await salesService.getSales();
         const itemsResult = await itemService.getItems();
         
-        console.log('SalesHistory - Sales result:', salesResult);
-        console.log('SalesHistory - Items result:', itemsResult);
-        
         // Use real data if available, otherwise fall back to sample data
         if (salesResult.success && salesResult.data.sales) {
           setSales(salesResult.data.sales);
         } else {
-          console.log('Using sample sales data for SalesHistory');
+          if (import.meta.env.DEV) console.log('Using sample sales data for SalesHistory');
           setSales(sampleSales);
         }
         
         if (itemsResult.success && itemsResult.data.items) {
           setItems(itemsResult.data.items);
         } else {
-          console.log('Using sample items data for SalesHistory');
+          if (import.meta.env.DEV) console.log('Using sample items data for SalesHistory');
           setItems(sampleItems);
         }
         
       } catch (err) {
         console.error('SalesHistory fetch error:', err);
-        console.log('Using sample data due to API error in SalesHistory');
+        if (import.meta.env.DEV) console.log('Using sample data due to API error in SalesHistory');
         setSales(sampleSales);
         setItems(sampleItems);
         setError('Using sample data - API connection failed.');

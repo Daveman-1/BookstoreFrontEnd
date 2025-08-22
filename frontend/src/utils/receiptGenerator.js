@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 
 export const generateReceipt = async (sale) => {
   try {
-    console.log('Starting receipt generation for sale:', sale);
+    if (import.meta.env.DEV) console.log('Starting receipt generation for sale:', sale);
     
     if (!sale) {
       throw new Error('Sale data is required');
@@ -167,7 +167,7 @@ export const generateReceipt = async (sale) => {
     yPosition += 4;
   }
 
-    console.log('Receipt generation completed successfully');
+          if (import.meta.env.DEV) console.log('Receipt generation completed successfully');
     return doc;
   } catch (error) {
     console.error('Error in generateReceipt:', error);
@@ -177,7 +177,7 @@ export const generateReceipt = async (sale) => {
 
 export const printReceipt = async (sale) => {
   try {
-    console.log('Generating receipt for sale:', sale);
+    if (import.meta.env.DEV) console.log('Generating receipt for sale:', sale);
     const doc = await generateReceipt(sale);
     doc.autoPrint();
     doc.output('dataurlnewwindow');
@@ -189,7 +189,7 @@ export const printReceipt = async (sale) => {
 
 export const downloadReceipt = async (sale) => {
   try {
-    console.log('Generating receipt for download:', sale);
+    if (import.meta.env.DEV) console.log('Generating receipt for download:', sale);
     const doc = await generateReceipt(sale);
     doc.save(`receipt-${sale.id}-${new Date().toISOString().split('T')[0]}.pdf`);
   } catch (error) {

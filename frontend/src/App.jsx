@@ -16,7 +16,7 @@ import LowStock from "./pages/LowStock";
 import SalesHistory from "./pages/SalesHistory";
 import Categories from "./pages/Categories";
 import Profile from "./pages/Profile";
-import ExcelManager from "./pages/ExcelManager";
+
 import Approvals from "./pages/Approvals";
 import BookstoreSettings from "./pages/BookstoreSettings";
 import NotFound from "./pages/NotFound";
@@ -154,21 +154,6 @@ function App() {
         </PermissionRoute>
       </ProtectedRoute>
     } />
-      <Route path="/excel-manager" element={
-        <ProtectedRoute>
-          <PermissionRoute permission="upload_excel">
-            <div className="flex min-h-screen bg-gray-50">
-              <Sidebar />
-              <div className="flex-1 flex flex-col overflow-hidden">
-                <Header />
-                <main className="flex-1 overflow-x-hidden overflow-y-auto">
-                  <ExcelManager />
-                </main>
-              </div>
-            </div>
-          </PermissionRoute>
-        </ProtectedRoute>
-      } />
       <Route path="/approvals" element={
         <ProtectedRoute>
           <PermissionRoute permission="approve_uploads">

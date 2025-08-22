@@ -181,7 +181,7 @@ export const analyticsHelpers = {
   processWeeklyData: (salesData) => {
     if (!salesData || !Array.isArray(salesData)) return [];
     
-    console.log('Processing weekly data for:', salesData.length, 'sales');
+    if (import.meta.env.DEV) console.log('Processing weekly data for:', salesData.length, 'sales');
     
     const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const weeklyData = Array.from({ length: 7 }, (_, i) => {
@@ -217,7 +217,7 @@ export const analyticsHelpers = {
       };
     });
 
-    console.log('Processed weekly data:', weeklyData);
+    if (import.meta.env.DEV) console.log('Processed weekly data:', weeklyData);
     return weeklyData;
   },
 

@@ -19,7 +19,7 @@ const LowStock = () => {
       setError(null);
       try {
         const res = await api.get('/items');
-        console.log('LowStock - Fetched items:', res.data.items);
+        if (import.meta.env.DEV) console.log('LowStock - Fetched items:', res.data.items);
         setItems(res.data.items || []);
       } catch (err) {
         console.error('LowStock - Error fetching items:', err);

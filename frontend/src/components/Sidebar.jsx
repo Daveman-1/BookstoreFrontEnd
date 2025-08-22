@@ -69,12 +69,6 @@ const Sidebar = () => {
       permission: "view_sales_history"
     },
     {
-      path: "/excel-manager",
-      name: "Excel Manager",
-      icon: FileSpreadsheet,
-      permission: null // Different permissions handled in component
-    },
-    {
       path: "/approvals",
       name: "Approvals",
       icon: CheckSquare,

@@ -126,15 +126,7 @@ const Login = () => {
               )}
             </button>
           </form>
-          {/* Demo Credentials */}
-          <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Demo Credentials:</h3>
-            <div className="space-y-1 text-xs text-gray-600">
-              <p><strong>Admin:</strong> admin / admin123</p>
-              <p><strong>Staff:</strong> staff1 / staff123</p>
-              <p><strong>Staff:</strong> staff2 / staff123</p>
-            </div>
-          </div>
+
         </div>
         {/* Footer */}
         <div className="text-center mt-4 sm:mt-6">

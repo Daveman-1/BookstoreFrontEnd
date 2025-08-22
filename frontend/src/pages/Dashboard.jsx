@@ -28,29 +28,25 @@ const Dashboard = () => {
       const itemsResult = await itemService.getItems();
       const salesResult = await salesService.getSales();
       
-      // Debug logging
-      console.log('Items result:', itemsResult);
-      console.log('Sales result:', salesResult);
-      
       // Use real data if available, otherwise fall back to sample data
       if (itemsResult.success && itemsResult.data.items) {
         setItems(itemsResult.data.items);
       } else {
-        console.log('Using sample items data');
+        if (import.meta.env.DEV) console.log('Using sample items data');
         setItems(sampleItems);
       }
       
       if (salesResult.success && salesResult.data.sales) {
         setSales(salesResult.data.sales);
       } else {
-        console.log('Using sample sales data');
+        if (import.meta.env.DEV) console.log('Using sample sales data');
         setSales(sampleSales);
       }
       
     } catch (err) {
       console.error('Dashboard fetch error:', err);
       // Fallback to sample data on error
-      console.log('Using sample data due to API error');
+      if (import.meta.env.DEV) console.log('Using sample data due to API error');
       setItems(sampleItems);
       setSales(sampleSales);
       setError('Using sample data - API connection failed.');
@@ -71,7 +67,7 @@ const Dashboard = () => {
   const totalSales = sales.reduce((total, sale) => {
     // Handle both 'total' and 'total_amount' field names
     const amount = parseFloat(sale.total_amount || sale.total || 0);
-    console.log('Sale:', sale, 'Amount:', amount);
+    if (import.meta.env.DEV) console.log('Sale:', sale, 'Amount:', amount);
     return total + amount;
   }, 0);
   
@@ -91,9 +87,11 @@ const Dashboard = () => {
   const pieData = analyticsHelpers.processCategoryData(items);
   const COLORS = analyticsHelpers.getChartColors();
   
-  // Debug logging for weekly data
-  console.log('Weekly data:', weeklyData);
-  console.log('Sales data:', sales);
+  // Debug logging for weekly data (development only)
+  if (import.meta.env.DEV) {
+    console.log('Weekly data:', weeklyData);
+    console.log('Sales data:', sales);
+  }
 
   const handleSale = () => {
     setShowItemSelectionModal(true);

@@ -1,8 +1,11 @@
 import axios from 'axios';
 
+// API Configuration
+const API_BASE_URL = 'https://bookstorebackend-0n75.onrender.com/api';
+
 // Create axios instance with default configuration
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -10,14 +13,16 @@ const api = axios.create({
 });
 
 // Request interceptor to add auth token
+const isDevelopment = import.meta.env.DEV;
+
 api.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('🔐 JWT token attached to request:', config.url);
+      if (isDevelopment) console.log('🔐 JWT token attached to request:', config.url);
     } else {
-      console.log('⚠️ No JWT token found for request:', config.url);
+      if (isDevelopment) console.log('⚠️ No JWT token found for request:', config.url);
     }
     return config;
   },
@@ -35,7 +40,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token expired or invalid - let the calling code handle this
-      console.log('🔒 401 error in API interceptor');
+      if (isDevelopment) console.log('🔒 401 error in API interceptor');
       sessionStorage.removeItem('authToken');
       // Don't automatically redirect - let the component handle it
     }

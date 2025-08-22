@@ -9,7 +9,7 @@ export const authService = {
       
       // Store token in sessionStorage immediately after successful login
       sessionStorage.setItem('authToken', token);
-      console.log('🔐 Token stored in sessionStorage');
+      if (import.meta.env.DEV) console.log('🔐 Token stored in sessionStorage');
       
       return { success: true, user, token };
     } catch (error) {

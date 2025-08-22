@@ -112,7 +112,7 @@ const ExcelManager = () => {
           };
 
           // In a real app, you'd send this to a backend endpoint for approval
-          console.log('Approval request:', approval);
+          if (import.meta.env.DEV) console.log('Approval request:', approval);
 
           setUploadStatus({
             type: 'success',
@@ -181,7 +181,7 @@ const ExcelManager = () => {
           };
 
           // In a real app, you'd send this to a backend endpoint for approval
-          console.log('Approval request:', approval);
+          if (import.meta.env.DEV) console.log('Approval request:', approval);
 
           setUploadStatus({
             type: 'success',
