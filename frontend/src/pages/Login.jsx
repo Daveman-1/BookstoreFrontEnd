@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, BookOpen, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, BookOpen, AlertCircle, PlayCircle } from "lucide-react";
 import { authService } from "../services/authService";
+import { demoAuthService } from "../services/demoAuthService";
 import { useSettings } from "../context/SettingsContext";
 
 const Login = () => {
@@ -12,15 +13,36 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [showDemoCredentials, setShowDemoCredentials] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    
+    console.log('🔐 Starting login process...');
+    console.log('Username:', username);
+    console.log('Demo mode:', isDemoMode);
+    console.log('API Base URL:', import.meta.env.VITE_API_URL || 'https://bookstorebackend-0n75.onrender.com/api');
+    
     try {
-      const result = await authService.login(username, password);
+      let result;
+      
+      if (isDemoMode) {
+        console.log('🎭 Using demo authentication');
+        result = await demoAuthService.login(username, password);
+      } else {
+        console.log('🌐 Using real authentication');
+        result = await authService.login(username, password);
+      }
+      
+      console.log('🔐 Login result:', result);
+      
       setIsLoading(false);
       if (result.success) {
+        console.log('✅ Login successful, user data:', result.user);
+        
         // Ensure user data has required properties before storing
         const userData = {
           ...result.user,
@@ -28,17 +50,51 @@ const Login = () => {
           name: result.user.name || result.user.username || result.user.email || 'User'
         };
         
+        console.log('💾 Storing user data:', userData);
         sessionStorage.setItem('authUser', JSON.stringify(userData));
-        console.log('User data stored:', userData);
+        
+        // Verify storage
+        const storedData = sessionStorage.getItem('authUser');
+        console.log('✅ Verified stored data:', storedData);
+        
         navigate('/dashboard', { replace: true });
       } else {
-        setError(result.error);
+        console.error('❌ Login failed:', result.error);
+        setError(result.error || 'Login failed. Please check your credentials.');
+        
+        // Auto-suggest demo mode if backend fails
+        if (!isDemoMode && (result.error?.includes('404') || result.error?.includes('Server not found'))) {
+          setIsDemoMode(true);
+          setShowDemoCredentials(true);
+        }
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Login failed. Please try again.');
+      console.error('💥 Login error:', err);
+      console.error('Error details:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
+      });
+      
+      if (err.response?.status === 404) {
+        setError('Server not found. Switching to demo mode for testing.');
+        setIsDemoMode(true);
+        setShowDemoCredentials(true);
+      } else if (err.response?.status >= 500) {
+        setError('Server error. Please try again later or use demo mode.');
+        setShowDemoCredentials(true);
+      } else {
+        setError('Login failed. Please check your internet connection and try again.');
+      }
       setIsLoading(false);
     }
+  };
+
+  const handleDemoLogin = (demoUser) => {
+    setUsername(demoUser.username);
+    setPassword(demoUser.password);
+    setIsDemoMode(true);
+    setShowDemoCredentials(false);
   };
 
   // Redirect if already authenticated
@@ -131,9 +187,57 @@ const Login = () => {
                   Signing In...
                 </div>
               ) : (
-                "Sign In"
+                <div className="flex items-center justify-center gap-2">
+                  {isDemoMode && <PlayCircle className="w-4 h-4" />}
+                  {isDemoMode ? 'Demo Sign In' : 'Sign In'}
+                </div>
               )}
             </button>
+
+            {/* Demo Mode Toggle */}
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isDemoMode}
+                  onChange={(e) => setIsDemoMode(e.target.checked)}
+                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <span className="text-gray-600">Demo Mode</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowDemoCredentials(!showDemoCredentials)}
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
+                {showDemoCredentials ? 'Hide' : 'Show'} Demo Accounts
+              </button>
+            </div>
+
+            {/* Demo Credentials */}
+            {showDemoCredentials && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="text-sm font-medium text-blue-800 mb-3">Demo Accounts:</h3>
+                <div className="space-y-2">
+                  {demoAuthService.getDemoCredentials().map((demo, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleDemoLogin(demo)}
+                      className="w-full text-left p-2 bg-white border border-blue-200 rounded hover:bg-blue-50 transition-colors"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="font-medium text-gray-800">{demo.username}</span>
+                          <span className="text-gray-600 ml-2">({demo.role})</span>
+                        </div>
+                        <span className="text-xs text-gray-500">{demo.name}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </form>
 
         </div>

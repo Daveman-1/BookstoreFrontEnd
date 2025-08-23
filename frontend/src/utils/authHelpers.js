@@ -9,28 +9,33 @@
 export const getAuthUser = () => {
   try {
     const userData = sessionStorage.getItem('authUser');
+    console.log('🔍 getAuthUser: Raw userData from sessionStorage:', userData);
+    
     if (!userData) {
-      console.warn('No user data found in sessionStorage');
+      console.warn('⚠️ No user data found in sessionStorage');
       return null;
     }
     
     const parsedUser = JSON.parse(userData);
+    console.log('🔍 getAuthUser: Parsed user data:', parsedUser);
     
     // Validate that the user object has required properties
     if (parsedUser && typeof parsedUser === 'object' && parsedUser.role) {
       // Ensure name property exists
       if (!parsedUser.name) {
+        console.log('🔧 Adding fallback name for user');
         parsedUser.name = parsedUser.username || parsedUser.email || 'User';
       }
+      console.log('✅ getAuthUser: Returning valid user:', parsedUser);
       return parsedUser;
     }
     
-    console.warn('Invalid user data structure:', parsedUser);
+    console.warn('⚠️ Invalid user data structure:', parsedUser);
     // Invalid user data, clear storage
     clearAuthData();
     return null;
   } catch (error) {
-    console.error('Error parsing user data from sessionStorage:', error);
+    console.error('❌ Error parsing user data from sessionStorage:', error);
     // Clear corrupted data
     clearAuthData();
     return null;
@@ -44,7 +49,18 @@ export const getAuthUser = () => {
 export const isAuthenticated = () => {
   const token = sessionStorage.getItem('authToken');
   const user = getAuthUser();
-  return !!(token && user);
+  
+  console.log('🔍 isAuthenticated check:', {
+    hasToken: !!token,
+    hasUser: !!user,
+    token: token ? 'Present' : 'Missing',
+    user: user ? user.name || user.username : 'Missing'
+  });
+  
+  const result = !!(token && user);
+  console.log('🔍 isAuthenticated result:', result);
+  
+  return result;
 };
 
 /**

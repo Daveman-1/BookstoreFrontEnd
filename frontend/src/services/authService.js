@@ -4,8 +4,16 @@ export const authService = {
   // Login user
   login: async (username, password) => {
     try {
+      console.log('🔐 authService.login called with:', { username, password: '***' });
+      console.log('🌍 API Base URL:', api.defaults.baseURL);
+      
       const response = await api.post('/auth/login', { username, password });
+      console.log('✅ Login API response:', response);
+      console.log('📄 Response data:', response.data);
+      
       const { token, user } = response.data.data;
+      console.log('🔑 Extracted token:', token ? 'Present' : 'Missing');
+      console.log('👤 Extracted user:', user);
       
       // Store token in sessionStorage immediately after successful login
       sessionStorage.setItem('authToken', token);
@@ -13,10 +21,14 @@ export const authService = {
       
       return { success: true, user, token };
     } catch (error) {
-      console.error('❌ Login failed:', error.response?.data?.message || error.message);
+      console.error('❌ Login failed with error:', error);
+      console.error('📊 Error response data:', error.response?.data);
+      console.error('📊 Error status:', error.response?.status);
+      console.error('📊 Error message:', error.message);
+      
       return {
         success: false,
-        error: error.response?.data?.message || 'Login failed'
+        error: error.response?.data?.message || error.message || 'Login failed'
       };
     }
   },
