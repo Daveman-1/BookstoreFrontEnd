@@ -11,6 +11,7 @@ import {
 } from "../utils/excelHandler";
 import { itemService } from '../services/itemService';
 import { salesService } from '../services/salesService';
+import { getAuthUser } from '../utils/authHelpers';
 
 const ExcelManager = () => {
   const [items, setItems] = useState([]);
@@ -22,7 +23,7 @@ const ExcelManager = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    setUser(JSON.parse(sessionStorage.getItem('authUser')));
+    setUser(getAuthUser());
     const fetchData = async () => {
       try {
         const itemsResult = await itemService.getItems();

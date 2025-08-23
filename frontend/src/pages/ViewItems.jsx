@@ -25,7 +25,17 @@ const ViewItems = () => {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [editModalItem, setEditModalItem] = useState(null);
 
-  const user = JSON.parse(sessionStorage.getItem('authUser'));
+  const getAuthUser = () => {
+    try {
+      const userData = sessionStorage.getItem('authUser');
+      return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      return null;
+    }
+  };
+
+  const user = getAuthUser();
   const isAdmin = user?.role === 'admin';
   const canManageInventory = isAdmin || (user?.permissions && user.permissions.includes('manage_inventory'));
   const canSell = !isAdmin && !(user?.permissions && user.permissions.includes('manage_inventory'));

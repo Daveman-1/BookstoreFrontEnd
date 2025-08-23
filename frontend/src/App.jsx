@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { getAuthUser, isAuthenticated, hasPermission } from "./utils/authHelpers";
 // No Zustand import
 
 // Components
@@ -21,22 +22,6 @@ import Approvals from "./pages/Approvals";
 import BookstoreSettings from "./pages/BookstoreSettings";
 import NotFound from "./pages/NotFound";
 import UserManagement from "./pages/UserManagement";
-
-function getAuthUser() {
-  try {
-    return JSON.parse(sessionStorage.getItem('authUser'));
-  } catch {
-    return null;
-  }
-}
-function isAuthenticated() {
-  return !!sessionStorage.getItem('authToken');
-}
-
-function hasPermission(permission) {
-  const user = getAuthUser();
-  return user && (user.role === 'admin' || (user.permissions && user.permissions.includes(permission)));
-}
 
 const PermissionRoute = ({ children, permission }) => {
   if (!hasPermission(permission)) {

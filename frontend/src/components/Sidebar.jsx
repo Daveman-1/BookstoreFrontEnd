@@ -19,7 +19,21 @@ import { useSettings } from "../context/SettingsContext";
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const user = JSON.parse(sessionStorage.getItem('authUser'));
+  
+  const getAuthUser = () => {
+    try {
+      const userData = sessionStorage.getItem('authUser');
+      return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      // Clear corrupted data
+      sessionStorage.removeItem('authUser');
+      sessionStorage.removeItem('authToken');
+      return null;
+    }
+  };
+
+  const user = getAuthUser();
   const { getStoreName } = useSettings();
 
   const handleLogout = () => {
@@ -27,6 +41,15 @@ const Sidebar = () => {
     sessionStorage.removeItem('authUser');
     navigate('/login');
   };
+
+  // If user data is corrupted or missing, redirect to login
+  React.useEffect(() => {
+    if (!user && sessionStorage.getItem('authToken')) {
+      // Token exists but user data is corrupted
+      sessionStorage.removeItem('authToken');
+      navigate('/login');
+    }
+  }, [user, navigate]);
 
   const isAdmin = user?.role === 'admin';
 
@@ -99,7 +122,7 @@ const Sidebar = () => {
           </div>
           <div>
             <h1 className="text-lg font-bold text-gray-800">{getStoreName()}</h1>
-            <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+            <p className="text-xs text-gray-500 capitalize">{user?.role || 'guest'}</p>
           </div>
         </div>
       </div>
@@ -110,8 +133,8 @@ const Sidebar = () => {
             <User className="w-5 h-5 text-blue-600" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-800 truncate">{user?.name}</p>
-            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+            <p className="text-sm font-medium text-gray-800 truncate">{user?.name || 'Unknown User'}</p>
+            <p className="text-xs text-gray-500 truncate">{user?.email || 'No email'}</p>
           </div>
         </div>
       </div>

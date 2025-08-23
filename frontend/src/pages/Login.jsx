@@ -21,13 +21,22 @@ const Login = () => {
       const result = await authService.login(username, password);
       setIsLoading(false);
       if (result.success) {
-        sessionStorage.setItem('authUser', JSON.stringify(result.user));
+        // Ensure user data has required properties before storing
+        const userData = {
+          ...result.user,
+          // Ensure name property exists
+          name: result.user.name || result.user.username || result.user.email || 'User'
+        };
+        
+        sessionStorage.setItem('authUser', JSON.stringify(userData));
+        console.log('User data stored:', userData);
         navigate('/dashboard', { replace: true });
       } else {
         setError(result.error);
       }
     } catch (err) {
-      setError('Login failed.');
+      console.error('Login error:', err);
+      setError('Login failed. Please try again.');
       setIsLoading(false);
     }
   };

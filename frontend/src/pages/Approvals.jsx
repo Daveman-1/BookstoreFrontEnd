@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { CheckCircle, XCircle, Clock, FileSpreadsheet, AlertCircle, Eye } from "lucide-react";
 import api from '../services/api';
+import { getAuthUser } from '../utils/authHelpers';
 
 const Approvals = () => {
   const [approvals, setApprovals] = useState([]);
@@ -13,7 +14,7 @@ const Approvals = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    setUser(JSON.parse(sessionStorage.getItem('authUser')));
+    setUser(getAuthUser());
     const fetchApprovals = async () => {
       setLoading(true);
       setError(null);
